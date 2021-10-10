@@ -1,0 +1,133 @@
+---
+title: "RMarkdown"
+author: "Samuel Guay"
+date: "10/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Travail sur des données ouvertes disponibles au QC
+
+https://www.donneesquebec.ca/recherche/dataset/vmtl-actes-criminels, Liste des actes criminels enregistrés par le Service de police de la Ville de Montréal (SPVM).
+
+Liste des actes criminels enregistrés par le Service de police de la Ville de Montréal (SPVM).
+Criminalité - 2015 à aujourd'hui
+## Importer données à partir du WEB
+
+Il faut d'abord importer les données et s'assurer du format de celle-ci. Un simple `head()` est suffisant pour nos besoins.
+
+```{r}
+data_URL <- "https://data.montreal.ca/dataset/5829b5b0-ea6f-476f-be94-bc2b8797769a/resource/c6f482bf-bf0f-4960-8b2f-9982c211addd/download/interventionscitoyendo.csv"
+dat <- read.csv(file = data_URL)
+head(dat)
+```
+
+premier problème, les accents sont bizarres... que faire?
+Dans les informations complémentaires sur la page de téléchargement des données, il est inscrit: 
+> Encodage de caractères
+> Le fichier CSV utilise l'encodage de caractère ISO-8859-1 (latin1)
+
+Il doit bien y avoir une façon de lire le fichier en spécifiant un encodage particulier.
+
+```{r}
+?read.csv
+```
+
+
+Dans l'aide, on y retrouve un argument ou deux arguments qui nous mèneront peut-être au résultat espérer, soit `fileEncoding = ""` et `encoding = "unknown"`, 
+```
+read.table(file, header = FALSE, sep = "", quote = "\"'",
+           dec = ".", numerals = c("allow.loss", "warn.loss", "no.loss"),
+           row.names, col.names, as.is = !stringsAsFactors,
+           na.strings = "NA", colClasses = NA, nrows = -1,
+           skip = 0, check.names = TRUE, fill = !blank.lines.skip,
+           strip.white = FALSE, blank.lines.skip = TRUE,
+           comment.char = "#",
+           allowEscapes = FALSE, flush = FALSE,
+           stringsAsFactors = default.stringsAsFactors(),
+           fileEncoding = "", encoding = "unknown", text, skipNul = FALSE)
+```
+> `fileEncoding`: character string: if non-empty declares the encoding used on a file (not a connection) so the character data can be re-encoded. See the ‘Encoding’ section of the help for file, the ‘R Data Import/Export Manual’ and ‘Note’.
+
+> `encoding`: encoding to be assumed for input strings. It is used to mark character strings as known to be in Latin-1 or UTF-8 (see Encoding): it is not used to re-encode the input, but allows R to handle encoded strings in their native encoding (if one of those two). See ‘Value’ and ‘Note’.
+
+En lisant les deux options, il est difficile de savoir quel argument nous devons choisir. Heureusement, la section *Note* précise que les deux peuvent être utilisé selon le format d'encodage de l'input:
+> Note
+> There are two approaches for reading input that is not in the local encoding. If the input is known to be UTF-8 or Latin1, use the encoding argument to declare that. If the input is in some other encoding, then it may be translated on input. The fileEncoding argument achieves this by setting up a connection to do the re-encoding into the current locale. Note that on Windows or other systems not running in a UTF-8 locale, this may not be possible.
+
+À ce stade de confusion, nous pouvons essayer les deux options et observer les différences..
+
+```{r}
+head(read.csv(file = data_URL, encoding = "Latin1"))
+head(read.csv(file = data_URL, fileEncoding = "Latin1"))
+```
+
+Il semble que l'argument `fileEncoding` remporte! Nous pouvons donc réimporter les données comme il faut.
+Nous pourrions également downloader les données pour être sûr d'avoir une copie locale, advenant que le site disparait du Web.
+```{r}
+dat <- read.csv(file = data_URL, fileEncoding = "Latin1")
+# download.file(url = data_URL, destfile = "copie_locale.csv")
+```
+
+## Exploration
+
+Maintenant que le jeu de données est importé, regardons voir si on comprend bien comment il est structuré.
+
+```{r}
+dim(dat)
+summary(dat)
+```
+
+On remarque 202375 observations et 8 variables `r names(dat)`. Certaines variables sont plutôt difficile à savoir ce qu'elles représentent, principalement PDF, X et Y et qu'il semble y avoir des 0 et des valeurs manquantes pour d'autres. Heureusement, il y a un Dictionnaire de données dans les informations complémentaires.
+
+**Dictionnaire de données**
+
+    CATEGORIE : Nature de l'événement. Liste de valeur :
+        Introduction : introduction par effraction dans un établissement public ou une résidence privée, vol d’arme à feu dans une résidence
+        Vol dans / sur véhicule à moteur : vol du contenu d’un véhicule à moteur (voiture, camion, motocyclette, etc.) ou d’une pièce de véhicule (roue, parechoc, etc.)
+        Vol de véhicule à moteur : vol de voiture, camion, motocyclette, motoneige tracteur avec ou sans remorque, véhicule de construction ou de ferme, tout-terrain
+        Méfait : Graffiti et dommage de biens religieux, de véhicule ou dommage général et tous autres types de méfaits
+        Vol qualifié : Vol accompagné de violence de commerce, institution financière, personne, sac à main, véhicule blindé, véhicule, arme à feu, et tous autres types de vols qualifiés
+        Infraction entraînant la mort : Meurtre au premier degré, meurtre au deuxième degré, homicide involontaire, infanticide, négligence criminelle, et tous autres types d’infractions entraînant la mort
+
+    DATE : Date du signalement de l'événement au SPVM au format AAAA-MM-JJ HH:mm:ss (note: la partie de l'heure n'est pas utilisée)
+
+    QUART : Moment de la journée du signalement de l'événement au SPVM. Liste de valeur :
+        jour : Entre 8h01 et 16h
+        soir : Entre 16h01 et minuit
+        nuit : Entre 00h01 et 8h
+
+    PDQ : Numéro du poste de quartier couvrant le territoire où s'est passé l'événement. Le territoire couvert par chaque poste est disponible dans l'ensemble de données des limites de PDQ
+
+    X et Y : Position géospatiale selon la projection MTM8 (SRID 2950)
+        La valeur 0 est utilisée lorsqu'aucune position géographique n'a été fournie lors de la saisie de l'information.
+
+    LAT et LONG: position géographique de l'événement après obfuscation à une intersection selon le référentiel géodésique WGS84.
+
+    La valeur 1 est utilisée lorsqu'aucune position géographique n'a été fournie lors de la saisie de l'information.
+
+À partir de ces infos, il faudrait déjà se questionner à propos de ce que nous ferons des 0 et des 1 pour les données géographiques, car celles-ci causeront problèmes pour la visualisation.
+
+Mais avant, assurons-nous que les valeurs représentent bien le type de données que nous avons. Il y a, entre autres, `DATE` qui semble n'être que des chaines de caractères et `PDQ` des nombres entiers alors qu'ils représentent les numéros des postes de quartier.
+
+Au-delà de la chaine de caractères, certaines données sont, en réalité, des **facteurs**, un type de structure de données dédié pour les données catégo-
+rielles qui permet d’automatiser plusieurs traitements. Quelles colonnes selon vous représentent des facteurs dans cet ensemble de données?
+
+```{r}
+dat$DATE <- as.Date(dat$DATE)
+
+# 1ère façon de faire "manuelle" pour convertir en facteurs
+dat$PDQ <- as.factor(dat$PDQ)
+dat$CATEGORIE <- as.factor(dat$CATEGORIE)
+dat$QUART <- as.factor(dat$QUART)
+
+# 2e façon de faire
+vars <- c("CATEGORIE", "PDQ", "QUART")
+dat[vars] <- lapply(dat[vars], as.factor)
+
+summary(dat)
+```
+
