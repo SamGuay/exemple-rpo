@@ -6,7 +6,8 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      tidy = TRUE)
 ```
 
 ## Travail sur des données ouvertes disponibles au QC
@@ -129,5 +130,97 @@ vars <- c("CATEGORIE", "PDQ", "QUART")
 dat[vars] <- lapply(dat[vars], as.factor)
 
 summary(dat)
+```
+
+## Exercices
+
+Maintenant que nous avons ce qu'il nous faut, il serait intéressant de voir si la criminalité augmente ou diminue entre chaque année.
+
+Est-ce la même tendance pour chaque catégorie de crimes?
+
+
+```{r}
+# format(dat$DATE, "%Y")
+
+dat$DATE_year <- format(dat$DATE, "%Y")
+dat$DATE_month <- format(dat$DATE, "%m")
+dat$DATE_month_year <- format(dat$DATE, c("Y%","%m"))
+```
+
+
+
+```{r}
+library(ggplot2)
+
+# Make xtables
+freq_year <- as.data.frame(table(dat$CATEGORIE, dat$DATE_year, useNA = "ifany"))
+colnames(freq_year) <- c("CATEGORIE", "YEAR", "Freq")
+
+freq_month_year <- as.data.frame(table(dat$CATEGORIE, dat$DATE_year, dat$DATE_month, useNA = "ifany"))
+colnames(freq_month_year) <- c("CATEGORIE", "YEAR", "MONTH", "Freq")
+
+ggplot(freq_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEGORIE)) +
+    geom_line(size = 1.5) +
+    theme_bw() +
+    labs(title = "Évolution annuelle de la criminalité rapportée depuis 2015 à Montréal",
+        x = "Années",
+        y = "Nombre de crimes") + 
+    theme(text=element_text(size = 16),
+          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5)) + geom_point(size = 3)
+
+ggplot(freq_month_year, aes(x = MONTH, y = Freq, group = CATEGORIE, color = CATEGORIE)) + geom_line(size=1.5) +
+    facet_wrap(facets = vars(YEAR)) +     geom_line(size = 1.5) +
+    theme_bw() +
+    labs(title = "Évolution annuelle de la criminalité rapportée depuis 2015 à Montréal",
+        x = "Années",
+        y = "Nombre de crimes") + 
+    theme(text=element_text(size = 16),
+          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5)) + geom_point(size = 3)
+
+ggplot(freq_month_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEGORIE)) + geom_line(size=1.5) +
+    facet_wrap(facets = vars(MONTH)) + geom_line(size = 1.5) +
+    theme_bw() +
+    labs(title = "Évolution annuelle de la criminalité rapportée depuis 2015 à Montréal",
+        x = "Années",
+        y = "Nombre de crimes") + 
+    theme(text=element_text(size = 16),
+          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5)) + geom_point(size = 3)
+```
+Et une map peut-être?
+
+```{r map, out.width = "100%"}
+#install.packages("leaflet")
+library(leaflet)
+
+m <- leaflet(options = leafletOptions(minZoom = 10, maxZoom = 18))
+m <- addTiles(m)
+m <- setView(m, lng = -73.58781, lat = 45.50884, zoom = 11)
+m <- addProviderTiles(m, providers$CartoDB.DarkMatter)
+
+dat$COLOR <- sapply(dat$CATEGORIE, function(CATEGORIE) {
+  if(CATEGORIE == "Infractions entrainant la mort") {
+    "red"
+  } else if(CATEGORIE == "Introduction") {
+    "pink"
+  } else if(CATEGORIE == "Méfait") {
+    "orange"
+  } else if(CATEGORIE == "Vol dans / sur véhicule à moteur") {
+    "green"
+  } else if(CATEGORIE == "Vol de véhicule à moteur") {
+    "blue"
+  } else {
+    "black"
+  } })
+
+icons <- awesomeIcons(
+  icon = 'ios-close',
+  iconColor = 'black',
+  library = 'ion',
+  markerColor = dat$COLOR
+)
+
+m <- addAwesomeMarkers(m, lng = dat$LONGITUDE, lat = dat$LATITUDE, icon = icons, label = paste(dat$QUART, "-", dat$CATEGORIE), clusterOptions = markerClusterOptions())
+
+m
 ```
 
