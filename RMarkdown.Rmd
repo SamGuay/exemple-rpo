@@ -186,7 +186,7 @@ ggplot(freq_month_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEG
     theme(text=element_text(size = 16),
           axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5)) + geom_point(size = 3)
 ```
-Et une map peut-être?
+`Et une map peut-être?
 
 ```{r map, out.width = "100%"}
 #install.packages("leaflet")
@@ -222,5 +222,5 @@ icons <- awesomeIcons(
 m <- addAwesomeMarkers(m, lng = dat$LONGITUDE, lat = dat$LATITUDE, icon = icons, label = paste(dat$QUART, "-", dat$CATEGORIE), clusterOptions = markerClusterOptions())
 
 m
-```
+````
 
