@@ -132,7 +132,7 @@ dat[vars] <- lapply(dat[vars], as.factor)
 summary(dat)
 ```
 
-## Exercices
+### Visualisation
 
 Maintenant que nous avons ce qu'il nous faut, il serait intéressant de voir si la criminalité augmente ou diminue entre chaque année.
 
@@ -149,7 +149,7 @@ dat$DATE_month_year <- format(dat$DATE, c("Y%","%m"))
 
 
 
-```{r}
+```{r viz, out.width = "100%"}
 library(ggplot2)
 
 # Make xtables
@@ -166,7 +166,9 @@ ggplot(freq_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEGORIE))
         x = "Années",
         y = "Nombre de crimes") + 
     theme(text=element_text(size = 16),
-          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5)) + geom_point(size = 3)
+          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5),
+          legend.position="bottom") +
+  geom_point(size = 3)
 
 ggplot(freq_month_year, aes(x = MONTH, y = Freq, group = CATEGORIE, color = CATEGORIE)) + geom_line(size=1.5) +
     facet_wrap(facets = vars(YEAR)) +     geom_line(size = 1.5) +
@@ -175,7 +177,9 @@ ggplot(freq_month_year, aes(x = MONTH, y = Freq, group = CATEGORIE, color = CATE
         x = "Années",
         y = "Nombre de crimes") + 
     theme(text=element_text(size = 16),
-          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5)) + geom_point(size = 3)
+          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5),
+          legend.position="bottom") +
+  geom_point(size = 3)
 
 ggplot(freq_month_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEGORIE)) + geom_line(size=1.5) +
     facet_wrap(facets = vars(MONTH)) + geom_line(size = 1.5) +
@@ -184,9 +188,12 @@ ggplot(freq_month_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEG
         x = "Années",
         y = "Nombre de crimes") + 
     theme(text=element_text(size = 16),
-          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5)) + geom_point(size = 3)
+          axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5),
+          legend.position="bottom") +
+  geom_point(size = 3)
 ```
-`Et une map peut-être?
+
+### Et une map peut-être?
 
 ```{r map, out.width = "100%"}
 #install.packages("leaflet")
@@ -212,15 +219,18 @@ dat$COLOR <- sapply(dat$CATEGORIE, function(CATEGORIE) {
     "black"
   } })
 
-icons <- awesomeIcons(
-  icon = 'ios-close',
-  iconColor = 'black',
-  library = 'ion',
-  markerColor = dat$COLOR
-)
+icons <- awesomeIcons(icon = 'ios-close',
+                      iconColor = 'black',
+                      library = 'ion',
+                      markerColor = dat$COLOR)
 
-m <- addAwesomeMarkers(m, lng = dat$LONGITUDE, lat = dat$LATITUDE, icon = icons, label = paste(dat$QUART, "-", dat$CATEGORIE), clusterOptions = markerClusterOptions())
+m <- addAwesomeMarkers(m,
+                       lng = dat$LONGITUDE,
+                       lat = dat$LATITUDE,
+                       icon = icons,
+                       label = paste(dat$QUART, "-", dat$CATEGORIE),
+                       clusterOptions = markerClusterOptions())
 
 m
-````
+```
 
