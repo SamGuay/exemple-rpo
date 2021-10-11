@@ -169,7 +169,7 @@ ggplot(freq_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEGORIE))
   geom_point(size = 3)
 
 ggplot(freq_month_year, aes(x = MONTH, y = Freq, group = CATEGORIE, color = CATEGORIE)) + geom_line(size=1) +
-    facet_wrap(facets = vars(YEAR)) +     geom_line(size = 1.5) +
+    facet_wrap(facets = vars(YEAR)) +
     theme_bw() +
     labs(title = "Évolution annuelle de la criminalité rapportée depuis 2015 à Montréal",
         x = "Années",
@@ -179,7 +179,7 @@ ggplot(freq_month_year, aes(x = MONTH, y = Freq, group = CATEGORIE, color = CATE
   geom_point(size = 1.25)
 
 ggplot(freq_month_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEGORIE)) + geom_line(size=1) +
-    facet_wrap(facets = vars(MONTH)) + geom_line(size = 1.5) +
+    facet_wrap(facets = vars(MONTH)) +
     theme_bw() +
     labs(title = "Évolution annuelle de la criminalité rapportée depuis 2015 à Montréal",
         x = "Années",
@@ -228,5 +228,13 @@ m <- addAwesomeMarkers(m,
                        clusterOptions = markerClusterOptions())
 
 m
+```
+
+
+
+## Références
+
+```{r}
+sessionInfo()
 ```
 
