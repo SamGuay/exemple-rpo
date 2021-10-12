@@ -132,11 +132,11 @@ dat[vars] <- lapply(dat[vars], as.factor)
 summary(dat)
 ```
 
-### Visualisation
+### Visualisations
 
 Maintenant que nous avons ce qu'il nous faut, il serait intéressant de voir si la criminalité augmente ou diminue entre chaque année.
 
-Est-ce la même tendance pour chaque catégorie de crimes?
+Est-ce la même tendance pour chaque catégorie de crimes? 
 
 
 ```{r}
@@ -230,9 +230,7 @@ m <- addAwesomeMarkers(m,
 m
 ```
 
-
-
-## Références
+### Référence (important)
 
 ```{r}
 sessionInfo()
