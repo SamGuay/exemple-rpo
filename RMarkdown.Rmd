@@ -230,7 +230,7 @@ m <- addAwesomeMarkers(m,
 m
 ```
 
-### Référence
+### Référence (important)
 
 ```{r}
 sessionInfo()
