@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       tidy = TRUE)
 ```
 
-## Travail sur des données ouvertes disponibles au QC
+## Travail sur des données ouvertes disponibles au Québec
 
 https://www.donneesquebec.ca/recherche/dataset/vmtl-actes-criminels, Liste des actes criminels enregistrés par le Service de police de la Ville de Montréal (SPVM).
 
@@ -161,12 +161,12 @@ colnames(freq_month_year) <- c("CATEGORIE", "YEAR", "MONTH", "Freq")
 ggplot(freq_year, aes(x = YEAR, y = Freq, group = CATEGORIE, color = CATEGORIE)) +
     geom_line(size = 1.5) +
     theme_bw() +
-    labs(title = "Évolution annuelle de la criminalité rapportée depuis 2015 à Montréal",
+    labs(title = "Évolution annuelle de la criminalité rapportée depuis 2015 à Mtl",
         x = "Années",
         y = "Nombre de crimes") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5),
           legend.position="bottom") +
-  geom_point(size = 3)
+  geom_point(size = 4)
 
 ggplot(freq_month_year, aes(x = MONTH, y = Freq, group = CATEGORIE, color = CATEGORIE)) + geom_line(size=1) +
     facet_wrap(facets = vars(YEAR)) +
