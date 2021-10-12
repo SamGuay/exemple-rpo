@@ -31,7 +31,8 @@ Dans les informations complémentaires sur la page de téléchargement des donn�
 > Encodage de caractères
 > Le fichier CSV utilise l'encodage de caractère ISO-8859-1 (latin1)
 
-Il doit bien y avoir une façon de lire le fichier en spécifiant un encodage particulier.
+#Il doit bien y avoir une façon de lire le fichier en spécifiant un encodage particulier.
+HELLOOOO :)
 
 ```{r}
 ?read.csv
