@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       tidy = TRUE)
 ```
 
-## Travail sur des données ouvertes disponibles au QC
+# Travail sur des données ouvertes disponibles au QC
 
 https://www.donneesquebec.ca/recherche/dataset/vmtl-actes-criminels, Liste des actes criminels enregistrés par le Service de police de la Ville de Montréal (SPVM).
 
