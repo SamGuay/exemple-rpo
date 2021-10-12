@@ -110,7 +110,7 @@ On remarque 202375 observations et 8 variables `r names(dat)`. Certaines variabl
 
     La valeur 1 est utilisée lorsqu'aucune position géographique n'a été fournie lors de la saisie de l'information.
 
-À partir de ces infos, il faudrait déjà se questionner à propos de ce que nous ferons des 0 et des 1 pour les données géographiques, car celles-ci causeront problèmes pour la visualisation.
+À partir de ces infos, *il faudrait déjà se questionner à propos de ce que nous ferons des 0 et des 1 pour les données géographiques*, car celles-ci causeront problèmes pour la visualisation.
 
 Mais avant, assurons-nous que les valeurs représentent bien le type de données que nous avons. Il y a, entre autres, `DATE` qui semble n'être que des chaines de caractères et `PDQ` des nombres entiers alors qu'ils représentent les numéros des postes de quartier.
 
