@@ -173,7 +173,7 @@ ggplot(freq_month_year, aes(x = MONTH, y = Freq, group = CATEGORIE, color = CATE
     theme_bw() +
     labs(title = "Évolution annuelle de la criminalité rapportée depuis 2015 à Montréal",
         x = "Années",
-        y = "Nombre de crimes") + 
+        y = "Nombre d'incidents") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5),
           legend.position="bottom") +
   geom_point(size = 1.25)
@@ -236,5 +236,13 @@ m
 
 ```{r}
 sessionInfo()
+```
+
+```{r}
+install.packages("gitcreds")
+
+library(gitcreds)
+
+gitcreds_set()
 ```
 
